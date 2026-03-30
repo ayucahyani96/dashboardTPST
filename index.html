@@ -3,7 +3,8 @@
 
 <head>
 
-<title>Dashboard TPST</title>
+<meta charset="UTF-8">
+<title>Monitoring Sampah TPST</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -12,12 +13,17 @@
 body{
 font-family:Arial;
 background:#f4f6fb;
-padding:30px;
+margin:40px;
 }
 
 .header{
-font-size:28px;
+font-size:30px;
 font-weight:bold;
+margin-bottom:10px;
+}
+
+.subheader{
+color:gray;
 margin-bottom:30px;
 }
 
@@ -30,7 +36,7 @@ margin-bottom:40px;
 
 .card{
 padding:20px;
-border-radius:10px;
+border-radius:12px;
 color:white;
 }
 
@@ -46,20 +52,20 @@ font-size:16px;
 }
 
 .card h1{
-margin:10px 0 0 0;
-font-size:30px;
+margin-top:10px;
+font-size:32px;
 }
 
-.chart-area{
+.dashboard{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:40px;
+gap:30px;
 }
 
-canvas{
+.box{
 background:white;
 padding:20px;
-border-radius:10px;
+border-radius:12px;
 box-shadow:0 4px 12px rgba(0,0,0,0.1);
 }
 
@@ -73,69 +79,78 @@ box-shadow:0 4px 12px rgba(0,0,0,0.1);
 Monitoring Sampah TPST
 </div>
 
+<div class="subheader">
+Data dari sistem timbangan TPST
+</div>
+
 <div class="kpi-grid">
 
 <div class="card green">
 <h3>Kapasitas TPST</h3>
-<h1 id="kapasitas"></h1>
+<h1 id="kapasitas">-</h1>
 </div>
 
 <div class="card blue">
 <h3>Sampah Masuk</h3>
-<h1 id="masuk"></h1>
+<h1 id="masuk">-</h1>
 </div>
 
 <div class="card orange">
 <h3>Sampah Terolah</h3>
-<h1 id="terolah"></h1>
+<h1 id="terolah">-</h1>
 </div>
 
 <div class="card red">
 <h3>Belum Terolah</h3>
-<h1 id="backlog"></h1>
+<h1 id="backlog">-</h1>
 </div>
 
 <div class="card gray">
 <h3>Utilisasi Fasilitas</h3>
-<h1 id="utilisasi"></h1>
+<h1 id="utilisasi">-</h1>
 </div>
 
 </div>
 
-<div class="chart-area">
+<div class="dashboard">
 
+<div class="box">
+<h3>Komposisi Sampah</h3>
 <canvas id="komposisi"></canvas>
-<canvas id="trend"></canvas>
+</div>
+
+<div class="box">
+<h3>Distribusi Jenis Sampah</h3>
+<canvas id="jenis"></canvas>
+</div>
 
 </div>
 
 <script>
 
-const API =
-"https://script.google.com/macros/s/AKfycbz8Z0w9xz_NlmO_EjYCebMduheQkMprBKv6F8097oUh2u340bdmkYxxz2JqufzMtbEk1Q/exec";
-
+const API_URL = "https://script.google.com/macros/s/AKfycbz8Z0w9xz_NlmO_EjYCebMduheQkMprBKv6F8097oUh2u340bdmkYxxz2JqufzMtbEk1Q/exec";
 
 function loadData(){
 
-fetch(API)
-.then(res=>res.json())
-.then(data=>{
+const script = document.createElement("script");
 
-document.getElementById("kapasitas").innerHTML =
-data.kapasitas + " ton";
+script.src = API_URL + "?callback=renderDashboard";
 
-document.getElementById("masuk").innerHTML =
-data.masuk.toFixed(1) + " ton";
+document.body.appendChild(script);
 
-document.getElementById("terolah").innerHTML =
-data.terolah.toFixed(1) + " ton";
+}
 
-document.getElementById("backlog").innerHTML =
-data.backlog.toFixed(1) + " ton";
+function renderDashboard(data){
 
-document.getElementById("utilisasi").innerHTML =
-data.utilisasi + "%";
+document.getElementById("kapasitas").innerHTML = data.kapasitas + " ton";
 
+document.getElementById("masuk").innerHTML = data.masuk.toFixed(1) + " ton";
+
+document.getElementById("terolah").innerHTML = data.terolah.toFixed(1) + " ton";
+
+document.getElementById("backlog").innerHTML = data.backlog.toFixed(1) + " ton";
+
+document.getElementById("utilisasi").innerHTML = data.utilisasi + "%";
 
 new Chart(
 document.getElementById("komposisi"),
@@ -153,15 +168,14 @@ data.komposisi.lain
 }
 });
 
-
 new Chart(
-document.getElementById("trend"),
+document.getElementById("jenis"),
 {
 type:"bar",
 data:{
 labels:["Organik","Daur Ulang","Lainnya"],
 datasets:[{
-label:"Jumlah Sampah",
+label:"Jumlah Sampah (kg)",
 data:[
 data.komposisi.organik,
 data.komposisi.daur,
@@ -171,18 +185,13 @@ data.komposisi.lain
 }
 });
 
-});
-
 }
 
 loadData();
-
-/* auto refresh tiap 60 detik */
 
 setInterval(loadData,60000);
 
 </script>
 
 </body>
-
 </html>
