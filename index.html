@@ -157,12 +157,13 @@ document.getElementById("komposisi"),
 {
 type:"doughnut",
 data:{
-labels:["Organik","Daur Ulang","Lainnya"],
+labels:["Organik","Daur Ulang","Lainnya", "Bulky waste"],
 datasets:[{
 data:[
 data.komposisi.organik,
 data.komposisi.daur,
-data.komposisi.lain
+data.komposisi.lain,
+data.komposisi.bulky
 ]
 }]
 }
@@ -173,13 +174,14 @@ document.getElementById("jenis"),
 {
 type:"bar",
 data:{
-labels:["Organik","Daur Ulang","Lainnya"],
+labels:["Organik","Daur Ulang","Lainnya", "Bulky waste"],
 datasets:[{
 label:"Jumlah Sampah (kg)",
 data:[
 data.komposisi.organik,
 data.komposisi.daur,
-data.komposisi.lain
+data.komposisi.lain,
+data.komposisi.bulky
 ]
 }]
 }
